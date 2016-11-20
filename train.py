@@ -87,10 +87,12 @@ Pe = tf.reshape(eve_conv4, [batch_size, N])
 #Compute loss
 eve_loss = eve_loss_function(P, Pe)
 alice_bob_loss = alice_bob_loss_function(P, Pb, N, eve_loss)
+alice_bob_l1 = L1(P, Pb)
 
 #Compute mean error
 eve_error = tf.reduce_mean(eve_loss)
 alice_bob_error = tf.reduce_mean(alice_bob_loss)
+alice_bob_error_l1 = tf.reduce_mean(alice_bob_l1)
 
 #Define optimizer and learning rate
 optimizer = tf.train.AdamOptimizer(learning_rate)
@@ -112,7 +114,8 @@ for i in xrange(epochs):
     (Pe2, Ke2) = generate_data(batch_size, N)
     if i % 100 == 0:
         training_error = alice_bob_error.eval(feed_dict={ P: Pab, K: Kab}),\
-                        eve_error.eval(feed_dict={ P: Pe1, K: Ke1})
+                         alice_bob_error_l1.eval(feed_dict={ P: Pab, K: Kab}),\
+                         eve_error.eval(feed_dict={ P: Pe1, K: Ke1})
         print("step {}, training error {}".format(i, training_error))
     #Train Alice and Bob
     alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab })
