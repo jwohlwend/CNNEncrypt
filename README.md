@@ -3,7 +3,7 @@
 CNNEncrypt was made as part of a final project for 6.867 - Machine Learning (MIT)
 It contains an example implementation of the network design described in the recently published paper:
 
-"Learning to Protect Communications with Adversarial Neural Cryptography" (2016) by  Martín Abadi, David G. Andersen (Google Brain).
+"Learning to Protect Communications with Adversarial Neural Cryptography" (2016) by  Martin Abadi, David G. Andersen (Google Brain).
 
 ## Usage 
 
