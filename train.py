@@ -111,11 +111,11 @@ for i in xrange(epochs):
     (Pe1, Ke1) = generate_data(batch_size, N)
     (Pe2, Ke2) = generate_data(batch_size, N)
     if i % 100 == 0:
-        training_error = alice_bob_error.eval(feed_dict={ P: Pab, K: Kab, keep_prob: 1.0 }),\
-                        eve_error.eval(feed_dict={ P: Pe1, K: Ke1, keep_prob: 1.0 })
+        training_error = alice_bob_error.eval(feed_dict={ P: Pab, K: Kab}),\
+                        eve_error.eval(feed_dict={ P: Pe1, K: Ke1})
         print("step {}, training error {}".format(i, training_error))
     #Train Alice and Bob
-    alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab, keep_prob: 1.0 })
+    alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab })
     #Train Eve 
-    eve_train_step.run(feed_dict={ P: Pe1, K: Ke1, keep_prob: 1.0 })
-    eve_train_step.run(feed_dict={ P: Pe2, K: Ke2, keep_prob: 1.0 })
+    eve_train_step.run(feed_dict={ P: Pe1, K: Ke1 })
+    eve_train_step.run(feed_dict={ P: Pe2, K: Ke2 })
