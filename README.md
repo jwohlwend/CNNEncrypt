@@ -20,6 +20,7 @@ To run the training, modify the parameters at the top of the train.py script:
 * N - size of the keys and plaintext  
 * batch_size - the number of training examples to use in a single iteration
 * epochs - the number of training iterations
+* learning_rate - the fixed learning rate to use in training
 
 and run:  
 

@@ -43,6 +43,7 @@ from helpers import *
 N = 16
 batch_size = 512
 epochs = 1000
+learning_rate = 0.0008
 
 #Create session
 sess = tf.InteractiveSession()
@@ -92,15 +93,15 @@ eve_error = tf.reduce_mean(loss_e)
 alice_bob_error = tf.reduce_mean(loss_ab)
 
 #Define optimizer and learning rate
-optimizer = tf.train.AdamOptimizer(0.0008)
+optimizer = tf.train.AdamOptimizer(learning_rate)
 
 #Get all variables
 alice_bob_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "alice_bob/")
 eve_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, "eve/")
 
 #Define training step
-alice_bob_train_step = optimizer.minimize(loss_ab, var_list=alice_bob_vars)
-eve_train_step = optimizer.minimize(loss_e, var_list=eve_vars)
+alice_bob_train_step = optimizer.minimize(alice_bob_loss, var_list=alice_bob_vars)
+eve_train_step = optimizer.minimize(eve_loss, var_list=eve_vars)
 
 #Train
 sess.run(tf.initialize_all_variables())
