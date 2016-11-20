@@ -159,7 +159,7 @@ def L1(P1, P2):
 	"""
 	return tf.reduce_sum(tf.abs(tf.sub(P1, P2)), reduction_indices = 1)
 
-def alice_bob_loss(P, Pb, N, eve_loss):
+def alice_bob_loss_function(P, Pb, N, eve_loss):
 	"""
 	Implements the loss function for Alice and Bob.
 	The loss is computed using the L1 distance between P and Pb
@@ -183,7 +183,7 @@ def alice_bob_loss(P, Pb, N, eve_loss):
 	"""
 	return L1(P, Pb) + (((N / 2) - eve_loss)**2) / ((N / 2)**2)
 
-def eve_loss(P, Pe):
+def eve_loss_function(P, Pe):
 	"""
 	Implements Eve's loss function, which is simply the L1 distance between P and Pe.
 
