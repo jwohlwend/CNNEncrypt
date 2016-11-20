@@ -86,7 +86,7 @@ Pe = tf.reshape(eve_conv4, [batch_size, N])
 
 #Compute loss
 eve_loss = eve_loss_function(P, Pe)
-alice_bob_loss = alice_bob_loss_function(P, Pb, N, loss_e)
+alice_bob_loss = alice_bob_loss_function(P, Pb, N, eve_loss)
 
 #Compute mean error
 eve_error = tf.reduce_mean(loss_e)
