@@ -110,7 +110,7 @@ def fc_layer(x, shape, name):
 	"""
 	outputs = shape[1]
 	W = weight_variable(shape, 1.0 / np.sqrt(outputs), name + "/W")
-	b = bias_variable(outputs, 0.1, name + "/b")
+	b = bias_variable([outputs], 0.1, name + "/b")
 
 	return tf.matmul(x, W) + b
 
@@ -137,7 +137,7 @@ def conv_layer(x, filter_shape, stride, sigmoid, name):
 	"""
 	outputs = filter_shape[2]
 	W = weight_variable(filter_shape, 1.0 / np.sqrt(outputs), name + "/W")
-	b = bias_variable(outputs, 0.1, name + "/b")
+	b = bias_variable([outputs], 0.1, name + "/b")
 	z = tf.nn.conv1d(x, W, stride = stride, padding = 'SAME') + b
 	a = tf.sigmoid(z) if sigmoid else tf.tanh(z)
   	return a
