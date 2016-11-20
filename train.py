@@ -99,11 +99,16 @@ eve_train_step = optimizer.minimize(loss_e, var_list=eve_vars)
 #Train
 sess.run(tf.initialize_all_variables())
 for i in xrange(epochs):
+	(Pab, Kab) = generate_data(batch_size, N)
+	#Train Eve over twice the amount of data
+	(Pe1, Ke1) = generate_data(batch_size, N)
+	(Pe2, Ke2) = generate_data(batch_size, N)
   	if i % 100 == 0:
-    	training_error = alice_bob_error.eval(), eve_error.eval()
+    	training_error = alice_bob_error.eval(feed_dict={ P: Pab, K: Kab, keep_prob: 1.0 }),\
+    		 			 eve_error.eval(feed_dict={ P: Pe1, K: Ke1, keep_prob: 1.0 })
     	print("step {}, training error {}".format(i, training_error))
-    #Train Alice and Bob once
-  	alice_bob_train_step.run()
-  	#Train Eve twice
-  	eve_train_step.run()
-  	eve_train_step.run()
+	#Train Alice and Bob
+  	alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab, keep_prob: 1.0 })
+	#Train Eve 
+  	eve_train_step.run(feed_dict={ P: Pe1, K: Ke1, keep_prob: 1.0 })
+  	eve_train_step.run(feed_dict={ P: Pe2, K: Ke2, keep_prob: 1.0 })
