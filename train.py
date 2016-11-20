@@ -56,26 +56,32 @@ K = tf.placeholder(tf.float32, shape = [batch_size, N])
 
 #Alice's network
 alice_input = tf.concat(1, [P, K])
+alice_input = tf.reshape(alice_input, [batch_size, 2 * N, 1])
 alice_fc = fc_layer(alice_input, shape = (2 * N, 2 * N), name = 'alice_bob/alice_fc')
 alice_conv1 = conv_layer(alice_fc, filter_shape = [4, 1, 2], stride = 1, sigmoid = True, name = 'alice_bob/alice_conv1')
 alice_conv2 = conv_layer(alice_conv1, filter_shape = [2, 2, 4], stride = 2, sigmoid = True, name = 'alice_bob/alice_conv2')
 alice_conv3 = conv_layer(alice_conv2, filter_shape = [1, 4, 4], stride = 1, sigmoid = True, name = 'alice_bob/alice_conv3')
 C = conv_layer(alice_conv3, filter_shape = [1, 4, 1], stride = 1, sigmoid = False, name = 'alice_bob/alice_conv4')
+C = tf.reshape(C, [batch_size, N])
 
 #Bob's network
 bob_input = tf.concat(1, [C, K])
+bob_input = tf.reshape(bob_input, [batch_size, 2 * N, 1])
 bob_fc = fc_layer(bob_input, shape = (2 * N, 2 * N), name = 'alice_bob/bob_fc')
 bob_conv1 = conv_layer(bob_fc, filter_shape = [4, 1, 2], stride = 1, sigmoid = True, name = 'alice_bob/bob_conv1')
 bob_conv2 = conv_layer(bob_conv1, filter_shape = [2, 2, 4], stride = 2, sigmoid = True, name = 'alice_bob/bob_conv2')
 bob_conv3 = conv_layer(bob_conv2, filter_shape = [1, 4, 4], stride = 1, sigmoid = True, name = 'alice_bob/bob_conv3')
 Pb = conv_layer(bob_conv3, filter_shape = [1, 4, 1], stride = 1, sigmoid = False, name = 'alice_bob/bob_conv4')
+Pb = tf.reshape(Pb, [batch_size, N])
 
 #Eve's network
-eve_fc = fc_layer(C, shape = (N, 2 * N), name = 'eve/fc')
+eve_input = tf.reshape(C, [batch_size, N, 1])
+eve_fc = fc_layer(eve_input, shape = (N, 2 * N), name = 'eve/fc')
 eve_conv1 = conv_layer(eve_fc, filter_shape = [4, 1, 2], stride = 1, sigmoid = True, name = 'eve/conv1')
 eve_conv2 = conv_layer(eve_conv1, filter_shape = [2, 2, 4], stride = 2, sigmoid = True, name = 'eve/conv2')
 eve_conv3 = conv_layer(eve_conv2, filter_shape = [1, 4, 4], stride = 1, sigmoid = True, name = 'eve/conv3')
 Pe = conv_layer(eve_conv3, filter_shape = [1, 4, 1], stride = 1, sigmoid = False, name = 'eve/conv4')
+Pe = tf.reshape(Pe, [batch_size, N])
 
 #Compute loss
 eve_loss = eve_loss_function(P, Pe)
