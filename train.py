@@ -89,8 +89,8 @@ eve_loss = eve_loss_function(P, Pe)
 alice_bob_loss = alice_bob_loss_function(P, Pb, N, eve_loss)
 
 #Compute mean error
-eve_error = tf.reduce_mean(loss_e)
-alice_bob_error = tf.reduce_mean(loss_ab)
+eve_error = tf.reduce_mean(eve_loss)
+alice_bob_error = tf.reduce_mean(alice_bob_loss)
 
 #Define optimizer and learning rate
 optimizer = tf.train.AdamOptimizer(learning_rate)
