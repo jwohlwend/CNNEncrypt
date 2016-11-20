@@ -24,7 +24,7 @@ Simple script to train the CNNEncrypt adverserial neural networks.
 
 This project is a replication of the paper: 
 "Learning to Protect Communications with Adversarial Neural Cryptography"(2016)
-by Martín Abadi, David G. Andersen (Google Brain).
+by Martin Abadi, David G. Andersen (Google Brain).
 
 Authors: Jeremy Wohlwend and Luis Sanmiguel
 """
