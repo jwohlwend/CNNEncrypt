@@ -42,7 +42,7 @@ import matplotlib.pyplot as plt
 #Batch_size is the number of examples to use in a single iterations
 #Epochs is the number of training iterations to run
 N = 16
-batch_size = 512
+batch_size = 4096
 epochs = 1000
 learning_rate = 0.0008
 
@@ -127,5 +127,5 @@ for i in xrange(epochs):
     eve_train_step.run(feed_dict={ P: Pe1, K: Ke1 })
     eve_train_step.run(feed_dict={ P: Pe2, K: Ke2 })
 
-plt.plot(range(epochs % 100), bob_plot, range(epochs % 100), eve_plot)
+plt.plot(range(len(bob_plot)), bob_plot, range(len(eve_plot)), eve_plot)
 plt.show()

@@ -218,6 +218,7 @@ def get_bit_error(P1, P2):
 	"""
 	P1_rounded = tf.sign(P1)
 	P2_rounded = tf.sign(P2)
-	boolean_error = tf.not_equal(P1_rounded, P2_rounded)
-	return tf.reduce_mean(tf.cast(boolean_error, tf.float32))
+	boolean_error = tf.cast(tf.not_equal(P1_rounded, P2_rounded), tf.float32)
+	sum_error = tf.reduce_sum(boolean_error, reduction_indices = 1)
+	return tf.reduce_mean(sum_error)
 
