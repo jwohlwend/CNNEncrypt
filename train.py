@@ -31,7 +31,7 @@ Authors: Jeremy Wohlwend and Luis Sanmiguel
 
 import tensorflow as tf
 from helpers import *
-from matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 #Below P refers to plaintext input, K to symmetric key and C to cypher text
 #Pb is Bob's prediction of the plaintext given C and K
