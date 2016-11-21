@@ -31,6 +31,7 @@ Authors: Jeremy Wohlwend and Luis Sanmiguel
 
 import tensorflow as tf
 from helpers import *
+from matplotlib.pyplot as plt
 
 #Below P refers to plaintext input, K to symmetric key and C to cypher text
 #Pb is Bob's prediction of the plaintext given C and K
@@ -87,12 +88,10 @@ Pe = tf.reshape(eve_conv4, [batch_size, N])
 #Compute loss
 eve_loss = eve_loss_function(P, Pe)
 alice_bob_loss = alice_bob_loss_function(P, Pb, N, eve_loss)
-alice_bob_l1 = L1(P, Pb)
 
-#Compute mean error
-eve_error = tf.reduce_mean(eve_loss)
-alice_bob_error = tf.reduce_mean(alice_bob_loss)
-alice_bob_error_l1 = tf.reduce_mean(alice_bob_l1)
+#Compute number of bits wrong for Bob and Eve
+bob_bit_error = get_bit_error(P, Pb)
+eve_bit_error = get_bit_error(P, Pe)
 
 #Define optimizer and learning rate
 optimizer = tf.train.AdamOptimizer(learning_rate)
@@ -107,18 +106,26 @@ eve_train_step = optimizer.minimize(eve_loss, var_list=eve_vars)
 
 #Train
 sess.run(tf.initialize_all_variables())
+
+#Prepare plot
+bob_plot = []
+eve_plot = []
 for i in xrange(epochs):
     (Pab, Kab) = generate_data(batch_size, N)
     #Train Eve over twice the amount of data
     (Pe1, Ke1) = generate_data(batch_size, N)
     (Pe2, Ke2) = generate_data(batch_size, N)
     if i % 100 == 0:
-        training_error = alice_bob_error.eval(feed_dict={ P: Pab, K: Kab}),\
-                         alice_bob_error_l1.eval(feed_dict={ P: Pab, K: Kab}),\
-                         eve_error.eval(feed_dict={ P: Pe1, K: Ke1})
-        print("step {}, training error {}".format(i, training_error))
+        training_error = bob_bit_error.eval(feed_dict={ P: Pab, K: Kab }),\
+                         eve_bit_error.eval(feed_dict={ P: Pab, K: Kab })
+        print("step {}, bit error {}".format(i, training_error))
+        bob_plot.append(training_error[0])
+        eve_plot.append(training_error[1])
     #Train Alice and Bob
     alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab })
     #Train Eve 
     eve_train_step.run(feed_dict={ P: Pe1, K: Ke1 })
     eve_train_step.run(feed_dict={ P: Pe2, K: Ke2 })
+
+plt.plot(range(epochs % 100), bob_plot, range(epochs % 100), eve_plot)
+plt.show()

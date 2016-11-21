@@ -199,3 +199,24 @@ def eve_loss_function(P, Pe):
 			the loss for Eve
 	"""
 	return L1(P, Pe)
+
+def get_bit_error(P1, P2):
+	"""
+	Returns the number of bits that are different between P1 and P2
+	P1 and P2 are first mapped to bit values using the sign function and then compared
+
+	Arguments:
+	---------
+		P1: tensorflow object
+			first plaintext as float or bit values
+		P2: tensorflow object
+			second plaintext as float or bit values
+	Returns:
+	--------
+		tensorflow object
+			the number of different bits between P1 and P2
+	"""
+	P1_rounded = tf.sign(P1)
+	P2_rounded = tf.sign(P2)
+	return tf.reduce_mean(tf.not_equal(P1_rounded, P2_rounded))
+
