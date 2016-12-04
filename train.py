@@ -43,7 +43,7 @@ import matplotlib.pyplot as plt
 #Epochs is the number of training iterations to run
 N = 16
 batch_size = 4096
-epochs = 1000
+epochs = 20000
 learning_rate = 0.0008
 
 #Create session
@@ -51,8 +51,7 @@ sess = tf.InteractiveSession()
 
 #Input size of 2 * N: len(K) + len(P)
 #Output size of N: len(C)
-P = tf.placeholder(tf.float32, shape = [batch_size, N])
-K = tf.placeholder(tf.float32, shape = [batch_size, N])
+P, K = generate_data(batch_size, N)
 
 #Setting sigmoid to False changes to activation function to tanh
 
@@ -111,21 +110,16 @@ sess.run(tf.initialize_all_variables())
 bob_plot = []
 eve_plot = []
 for i in xrange(epochs):
-    (Pab, Kab) = generate_data(batch_size, N)
-    #Train Eve over twice the amount of data
-    (Pe1, Ke1) = generate_data(batch_size, N)
-    (Pe2, Ke2) = generate_data(batch_size, N)
     if i % 100 == 0:
-        training_error = bob_bit_error.eval(feed_dict={ P: Pab, K: Kab }),\
-                         eve_bit_error.eval(feed_dict={ P: Pab, K: Kab })
+        training_error = bob_bit_error.eval(), eve_bit_error.eval()
         print("step {}, bit error {}".format(i, training_error))
         bob_plot.append(training_error[0])
         eve_plot.append(training_error[1])
     #Train Alice and Bob
-    alice_bob_train_step.run(feed_dict={ P: Pab, K: Kab })
+    alice_bob_train_step.run()
     #Train Eve 
-    eve_train_step.run(feed_dict={ P: Pe1, K: Ke1 })
-    eve_train_step.run(feed_dict={ P: Pe2, K: Ke2 })
+    eve_train_step.run()
+    eve_train_step.run()
 
 plt.plot(range(len(bob_plot)), bob_plot, range(len(eve_plot)), eve_plot)
 plt.show()

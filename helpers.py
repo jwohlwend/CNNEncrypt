@@ -28,8 +28,6 @@ by Martin Abadi, David G. Andersen (Google Brain).
 
 Authors: Jeremy Wohlwend and Luis Sanmiguel
 """
-
-import numpy as np
 import tensorflow as tf
 
 def generate_data(batch_size, length):
@@ -47,9 +45,9 @@ def generate_data(batch_size, length):
 		(P, K): tuple of 2-D float32 numpy arrays
 			"batch_size" examples of plaintexts P and keys K of each of size "lenght"
 	"""
-	P = 2 * np.random.randint(0, 2, size = (batch_size, length)) - 1
-	K = 2 * np.random.randint(0, 2, size = (batch_size, length)) - 1
-	return (P.astype(np.float32), K.astype(np.float32))
+	P = 2 * tf.random_uniform([batch_size, length], minval=0, maxval=2, dtype=tf.int32) - 1
+	K = 2 * tf.random_uniform([batch_size, length], minval=0, maxval=2, dtype=tf.int32) - 1
+	return (tf.to_float(P), tf.to_float(K))
 
 def weight_variable(shape, std, name):
 	"""
@@ -108,9 +106,9 @@ def fc_layer(x, shape, name):
 		tensorflow object
 			the output of the fully connected layer
 	"""
-	outputs = shape[1]
-	W = weight_variable(shape, 1.0 / np.sqrt(outputs), name + "/W")
-	b = bias_variable([outputs], 0.1, name + "/b")
+	num_inputs, num_outputs = shape
+	W = weight_variable(shape, tf.rsqrt(float(num_inputs)), name + "/W")
+	b = bias_variable([num_outputs], 0.0, name + "/b")
 
 	return tf.matmul(x, W) + b
 
@@ -135,9 +133,9 @@ def conv_layer(x, filter_shape, stride, sigmoid, name):
 		tensorflow object
 			the output of the 1-D convolutional layer
 	"""
-	outputs = filter_shape[2]
-	W = weight_variable(filter_shape, 1.0 / np.sqrt(outputs), name + "/W")
-	b = bias_variable([outputs], 0.1, name + "/b")
+	filter_width, filter_depth, num_outputs = filter_shape
+	W = weight_variable(filter_shape, tf.rsqrt(float(filter_width * filter_depth)), name + "/W")
+	b = bias_variable([num_outputs], 0.0, name + "/b")
 	z = tf.nn.conv1d(x, W, stride = stride, padding = 'SAME') + b
 	a = tf.sigmoid(z) if sigmoid else tf.tanh(z)
   	return a
@@ -181,7 +179,7 @@ def alice_bob_loss_function(P, Pb, N, eve_loss):
 		tensorflow object
 			the loss for Alice and Bob
 	"""
-	return L1(P, Pb) + (((N / 2) - eve_loss)**2) / ((N / 2)**2)
+	return L1(P, Pb) + ((N - eve_loss)**2) / (N**2)
 
 def eve_loss_function(P, Pe):
 	"""
