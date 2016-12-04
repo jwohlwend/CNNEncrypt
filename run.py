@@ -71,8 +71,8 @@ for i in range(training):
     if bob_results[-1] < 0.05 and abs(eve_results[-1] - N/2) < 2.0:
         #Successful run ! Now test
         train_success_file.write("%s\n" % i)
+        success = True
         for j in range(testing):
-            success = True
             tf.reset_default_graph()
             test_model = Model(N, batch_size, learning_rate)
             test_model.restore_alice_bob(path + '/alice_bob_model.ckpt')
