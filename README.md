@@ -15,7 +15,7 @@ Note that using the GPU implementation of Tensorflow increases performance drama
 We recommend using a GPU for training since this particular 
 experiment requires thousands of training iterations over large batches.
 
-To run the training, modify the parameters at the top of the train.py script:   
+To run the training, modify the parameters at the top of the run.py script:   
 
 * N - size of the keys and plaintext  
 * batch_size - the number of training examples to use in a single iteration
@@ -24,7 +24,7 @@ To run the training, modify the parameters at the top of the train.py script:
 
 and run:  
 
-`python train.py`
+`python run.py`
 
 ## Liscence
 

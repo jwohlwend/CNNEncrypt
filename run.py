@@ -46,9 +46,11 @@ learning_rate = 0.0008
 
 #Save folder
 root = "/home/jeremy/Documents/experiment1"
+train_success_file = open(root + '/training_success.txt', 'a')
+test_success_file = open(root + '/testing_success.txt', 'a')
 
 #Run experiment
-for i in range(training):
+for i in range(6, training):
     #Init
     tf.reset_default_graph()
     path = root + '/model_' + str(i)
@@ -64,9 +66,6 @@ for i in range(training):
     plt.ylabel('bit error', fontsize=16)
     plt.savefig(path + "/fig.png")
     model.save(path)
-
-    train_success_file = open(root + '/training_success.txt', 'w')
-    test_success_file = open(root + '/testing_success.txt', 'w')
 
     if bob_results[-1] < 0.05 and abs(eve_results[-1] - N/2) < 2.0:
         #Successful run ! Now test
@@ -84,4 +83,6 @@ for i in range(training):
             #Successful testing run!
             test_success_file.write("%s\n" % i)
 
+train_success_file.close()
+test_success_file.close()
 
