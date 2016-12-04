@@ -20,7 +20,8 @@
 # OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 """
-Simple script to train the CNNEncrypt adverserial neural networks.
+Main file containing the CNNEncrypt adverserial neural network model,
+and methods for training, testing and saving the model.
 
 This project is a replication of the paper: 
 "Learning to Protect Communications with Adversarial Neural Cryptography"(2016)
@@ -33,11 +34,33 @@ import tensorflow as tf
 from helpers import *
 
 class Model:
+    """
+    Implements the Adverserial Neural Network model.
+
+    The model contains 3 neural networks: Alice, Bob and Eve. 
+    Alice takes in a plaintext P and a key K and produces a cypher C.
+    Bob attempts to reconstruct P from C and K, while Eve tries to decypher C
+    without any knowledge of the key K.
+
+    Each neural network is composed of a fully connected layer and 4 convolution layers.
+    These all use sigmoid activation functions except for the output layer which uses tanh.
+
+    More detail about the loss functions and the format of the layers can be found in 
+    the helpers.py file.
+    """
     def __init__(self, N, batch_size, learning_rate):
         """
-        Choose N, the size of the pliantext in bits. 
-        The same value is used for the size of the symmetric key K
-        Batch_size is the number of examples to use in a single iterations
+        Initializes a model with the given parameters.
+
+        Arguments:
+        ---------
+            N: int
+                the number of bits in the plaintext P
+                the same number is used for the size of the key K
+            batch_size: int
+                the mini-batch size to use in training
+            learning_rate: float
+                the constant learning rate used by the Adam optimizer
         """
 
         #Create session
@@ -109,6 +132,22 @@ class Model:
         self.sess.run(tf.initialize_all_variables())
 
     def train(self, epochs):
+        """
+        Trains the model by running Alice and Bob for one run and Eve for two.
+        This gives Eve a slight computational edge.
+
+        Arguments:
+        ---------
+            epochs: int
+                the number of training iterations
+        
+        Returns:
+        --------
+            bob_results: list of floats
+                bob's mean bit error for every 100th iteration
+            eve_results: list of floats
+                eve's mean bit error for every 100th iteration
+        """
         bob_results = []
         eve_results = []
         for i in xrange(epochs):
@@ -126,6 +165,19 @@ class Model:
         return bob_results, eve_results
 
     def test(self, epochs):
+        """
+        Tests the model by running Eve alone for epochs iterations
+
+        Arguments:
+        ---------
+            epochs: int
+                the number of testing iterations
+        
+        Returns:
+        --------
+            eve_results: list of floats
+                eve's mean bit error for every 1000th iteration
+        """
         eve_results = []
         for i in xrange(epochs):
             if i % 1000 == 0:
@@ -137,12 +189,36 @@ class Model:
         return eve_results
 
     def restore_alice_bob(self, restore_path):
+        """
+        Restores eve from the given file
+
+        Arguments:
+        ---------
+            restore_path: string
+                the path to alice and bob's data
+        """
         self.alice_bob_saver.restore(self.sess, restore_path)
 
     def restore_eve(self, restore_path):
+        """
+        Restores eve from the given file
+
+        Arguments:
+        ---------
+            restore_path: string
+                the path to eve's data
+        """
         self.eve_saver.restore(self.sess, restore_path)
 
     def save(self, save_path):
+        """
+        Saves the model to the given location
+
+        Arguments:
+        ---------
+            save_path: string
+                the directory to use to store the model
+        """
         self.alice_bob_saver.save(self.sess, save_path + "/alice_bob_model.ckpt")
         self.eve_saver.save(self.sess, save_path + "/eve_model.ckpt")
 
