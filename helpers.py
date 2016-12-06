@@ -107,10 +107,10 @@ def fc_layer(x, shape, name):
 			the output of the fully connected layer
 	"""
 	num_inputs, num_outputs = shape
-	W = weight_variable(shape, tf.rsqrt(float(num_inputs)), name + "/W")
+	W = weight_variable(shape, 1.0, name + "/W")
 	b = bias_variable([num_outputs], 0.0, name + "/b")
+	return tf.nn.sigmoid(tf.matmul(x, W) + b)
 
-	return tf.matmul(x, W) + b
 
 def conv_layer(x, filter_shape, stride, sigmoid, name):
 	"""
@@ -133,16 +133,17 @@ def conv_layer(x, filter_shape, stride, sigmoid, name):
 		tensorflow object
 			the output of the 1-D convolutional layer
 	"""
-	filter_width, filter_depth, num_outputs = filter_shape
-	W = weight_variable(filter_shape, tf.rsqrt(float(filter_width * filter_depth)), name + "/W")
+	filter_width, num_inputs, num_outputs = filter_shape
+	W = weight_variable(filter_shape, 0.1, name + "/W")
 	b = bias_variable([num_outputs], 0.0, name + "/b")
 	z = tf.nn.conv1d(x, W, stride = stride, padding = 'SAME') + b
-	a = tf.sigmoid(z) if sigmoid else tf.tanh(z)
+	a = tf.nn.sigmoid(z) if sigmoid else tf.nn.tanh(z)
   	return a
 
 def L1(P1, P2):
 	"""
-	Returns the L1 distance between plaintexts P1 and P2.
+	Returns the L1 distance between plaintexts P1 and P2,
+	averaged over the number of batches
 
 	Arguments:
 	---------
@@ -155,7 +156,9 @@ def L1(P1, P2):
 		tensorflow object
 			the L1 distance between P1 and P2
 	"""
-	return tf.reduce_sum(tf.abs(tf.sub(P1, P2)), reduction_indices = 1)
+	#Suggested by Professor Andersen
+	bits_wrong = tf.reduce_sum(tf.abs((P1 + 1.0) / 2.0 - (P2 + 1.0) / 2.0), [1])
+	return tf.reduce_mean(bits_wrong)
 
 def alice_bob_loss_function(P, Pb, N, eve_loss):
 	"""
@@ -179,7 +182,7 @@ def alice_bob_loss_function(P, Pb, N, eve_loss):
 		tensorflow object
 			the loss for Alice and Bob
 	"""
-	return L1(P, Pb) + ((N - eve_loss)**2) / (N**2)
+	return L1(P, Pb) + ((N / 2 - eve_loss)**2) / (N / 2)**2
 
 def eve_loss_function(P, Pe):
 	"""
@@ -214,9 +217,6 @@ def get_bit_error(P1, P2):
 		tensorflow object
 			the number of different bits between P1 and P2
 	"""
-	P1_rounded = tf.sign(P1)
-	P2_rounded = tf.sign(P2)
-	boolean_error = tf.cast(tf.not_equal(P1_rounded, P2_rounded), tf.float32)
-	sum_error = tf.reduce_sum(boolean_error, reduction_indices = 1)
-	return tf.reduce_mean(sum_error)
+	boolean_error = tf.cast(tf.not_equal(tf.sign(P1), tf.sign(P2)), tf.float32)
+	return tf.reduce_mean(tf.reduce_sum(boolean_error, [1]))
 
