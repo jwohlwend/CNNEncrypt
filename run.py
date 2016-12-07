@@ -31,8 +31,8 @@ Authors: Jeremy Wohlwend and Luis Sanmiguel
 import matplotlib.pyplot as plt
 from model import Model
 import tensorflow as tf
-import os
 import numpy as np
+import os
 
 #Experiment parameters
 training = 20

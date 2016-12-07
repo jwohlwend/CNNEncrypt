@@ -97,7 +97,7 @@ class Model:
         Pb = tf.reshape(bob_conv4, [batch_size, N])
 
         #Eve's network
-        eve_fc = fc_layer(C, shape = (N, 2 * N), name = 'eve/fc')
+        eve_fc = fc_layer(self.C, shape = (N, 2 * N), name = 'eve/fc')
         eve_fc = tf.reshape(eve_fc, [batch_size, 2 * N, 1])
         eve_conv1 = conv_layer(eve_fc, filter_shape = [4, 1, 2], stride = 1, sigmoid = True, name = 'eve/conv1')
         eve_conv2 = conv_layer(eve_conv1, filter_shape = [2, 2, 4], stride = 2, sigmoid = True, name = 'eve/conv2')
