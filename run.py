@@ -46,7 +46,7 @@ batch_size = 4096
 learning_rate = 0.0008
 
 #Save folder
-root = "/home/jeremy/Documents/experiment10"
+root = "/home/jeremy/Documents/experiment11"
 
 #Run experiment
 for i in range(0, training):
@@ -66,7 +66,11 @@ for i in range(0, training):
     plt.xlabel('training iteration', fontsize=16)
     plt.ylabel('bit error', fontsize=16)
     plt.savefig(path + "/training.png")
-    #Save model
+    #Save model and a run through the variables P, K and C
+    (P, K, C) = model.analyze()
+    np.savetxt(path +'/fixed_plaintexts.csv', P, fmt='%0i', delimiter=',')
+    np.savetxt(path +'/fixed_keys.csv', K, fmt='%0i', delimiter=',')
+    np.savetxt(path +'/cyphertext.csv', C, fmt='%0i', delimiter=',')
     model.save(path)
 
     if bob_results[-1] < 0.05 and abs(eve_results[-1] - N/2) < 0.7:
@@ -92,11 +96,6 @@ for i in range(0, training):
         if success:
             #Successful testing run!
             test_success_file.write("%s\n" % i)
-            (P,K,C) = model.analyze()
-            np.savetxt(path +'/fixed_plaintexts.csv', P, fmt='%0i', delimiter=',')
-            np.savetxt(path +'/fixed_keys.csv', K, fmt='%0i', delimiter=',')
-            np.savetxt(path +'/cyphertext.csv', C, fmt='%0i', delimiter=',')
-
 
     train_success_file.close()
     test_success_file.close()

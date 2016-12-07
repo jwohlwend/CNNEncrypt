@@ -156,11 +156,9 @@ def L1(P1, P2):
 		tensorflow object
 			the L1 distance between P1 and P2
 	"""
-	#Suggested by Professor Andersen
-	bits_wrong = tf.reduce_sum(tf.abs((P1 + 1.0) / 2.0 - (P2 + 1.0) / 2.0), [1])
-	return tf.reduce_mean(bits_wrong)
+	return tf.reduce_sum(tf.abs((P1 + 1.0) / 2.0 - (P2 + 1.0) / 2.0), [1])
 
-def alice_bob_loss_function(P, Pb, N, eve_loss):
+def alice_bob_loss_function(P, Pb, Pe, N):
 	"""
 	Implements the loss function for Alice and Bob.
 	The loss is computed using the L1 distance between P and Pb
@@ -173,16 +171,17 @@ def alice_bob_loss_function(P, Pb, N, eve_loss):
 			the original plaintext
 		Pb: tensorflow object
 			the plaintext predicted by Bob
+		Pe: tensorflow object
+			the plaintext predicted by Eve
 		N: int
 			the number of bits used in P
-		eve_loss: tensorflow object
-			eve's computed loss
 	Returns:
 	--------
 		tensorflow object
 			the loss for Alice and Bob
 	"""
-	return L1(P, Pb) + ((N / 2 - eve_loss)**2) / (N / 2)**2
+	bit_error = L1(P, Pb) + ((N / 2 - L1(P, Pe))**2) / (N / 2)**2
+	return tf.reduce_mean(bit_error)
 
 def eve_loss_function(P, Pe):
 	"""
@@ -199,7 +198,8 @@ def eve_loss_function(P, Pe):
 		tensorflow object
 			the loss for Eve
 	"""
-	return L1(P, Pe)
+	bit_error = L1(P, Pe)
+	return tf.reduce_mean(bit_error)
 
 def get_bit_error(P1, P2):
 	"""
