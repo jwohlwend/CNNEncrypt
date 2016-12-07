@@ -32,6 +32,7 @@ import matplotlib.pyplot as plt
 from model import Model
 import tensorflow as tf
 import os
+import numpy as np
 
 #Experiment parameters
 training = 20
@@ -91,6 +92,11 @@ for i in range(0, training):
         if success:
             #Successful testing run!
             test_success_file.write("%s\n" % i)
+            (P,K,C) = model.analyze()
+            np.savetxt(path +'/fixed_plaintexts.csv', P, fmt='%0i', delimiter=',')
+            np.savetxt(path +'/fixed_keys.csv', K, fmt='%0i', delimiter=',')
+            np.savetxt(path +'/cyphertext.csv', C, fmt='%0i', delimiter=',')
+
 
     train_success_file.close()
     test_success_file.close()
