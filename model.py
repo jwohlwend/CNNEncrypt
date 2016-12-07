@@ -106,12 +106,12 @@ class Model:
         Pe = tf.reshape(eve_conv4, [batch_size, N])
 
         #Compute loss
-        eve_loss = eve_loss_function(P, Pe)
-        alice_bob_loss = alice_bob_loss_function(P, Pb, Pe, N)
+        eve_loss = eve_loss_function(self.P, Pe)
+        alice_bob_loss = alice_bob_loss_function(self.P, Pb, Pe, N)
 
         #Compute number of bits wrong for Bob and Eve
-        self.bob_bit_error = get_bit_error(P, Pb)
-        self.eve_bit_error = get_bit_error(P, Pe)
+        self.bob_bit_error = get_bit_error(self.P, Pb)
+        self.eve_bit_error = get_bit_error(self.P, Pe)
 
         #Define optimizer and learning rate
         optimizer = tf.train.AdamOptimizer(learning_rate)
